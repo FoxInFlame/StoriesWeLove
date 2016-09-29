@@ -1,0 +1,295 @@
+html, body {
+  overflow: visible;
+}
+
+body {
+  background: #ebeef0;
+  margin: 0;
+  padding: 0;
+  overflow: visible;
+}
+
+#appbar {
+  height: 56px;
+  width: 100%;
+  background: #ffa000;
+  z-index: 100;
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+#appbar .action {
+  height: 56px;
+  width: 56px;
+}
+
+#appbar .action i {
+  padding: 16px;
+}
+
+#appbar .action.action-nav-left {
+  float: left;
+  color: #ffffff;
+}
+
+#appbar .action.action-nav-right {
+  float: right;
+  color: #cc8000;
+}
+
+#information {
+ height: 450px;
+ position: relative;
+ margin-top: 56px; /*App bar is fixed*/
+ z-index: 50;
+}
+
+#information .cover {
+  width: 100%;
+  height: 450px;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+}
+
+#information .cover img {
+  width: 100%;
+  overflow: hidden;
+  bottom: 0;
+  position: absolute;
+}
+
+#information .brief {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 160px;
+  background: white;
+  z-index: 2;
+}
+#information .brief .diagonal {
+  position: absolute;
+  top: -20px;
+  background: white;
+  width: 100%;
+  height: 60px;
+  z-index: 1;
+  transform:skew(0deg,-5deg);
+  -ms-transform:skew(0deg,-10deg);
+  -webkit-transform:skew(0deg,-5deg);
+}
+
+#information .brief .text {
+  position: absolute;
+  height: 100%;
+  width: calc(100% - 32px);
+  background: white;
+  z-index: 2;
+  padding-left: 16px;
+  padding-right: 16px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+#information .brief .text .story--title {
+  color: #212121;
+  font-weight: 600;
+  font-size: 24px;
+}
+
+#information .brief .text .story--author {
+  color: rgba(0, 0, 0, 0.6);
+  padding-top: 5px;
+  font-weight: 400;
+  font-size: 14px;
+}
+
+#information .brief .text .story--description {
+  color: rgba(0, 0, 0, 0.65);
+  padding-top: 16px;
+  font-weight: 400;
+  font-size: 11px;
+  line-height: 18px;
+  white-space: normal;
+  max-height: 54px;
+  overflow: hidden;
+}
+
+#information .brief .text .story--description:after {
+  content: "";
+  text-align: right;
+  position: absolute;
+  bottom: 16px;
+  right: 0;
+  width: 25%;
+  height: 18px;
+  background: linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1) 50%);
+}
+
+#information .brief .text .story--description p {
+  display: inline;
+}
+
+#information .action-button {
+  z-index: 3;
+  position: absolute;
+  right: 16px;
+  top: 235px;
+  height: 56px;
+  width: 56px;
+  border-radius: 28px;
+}
+
+#information .action-button .floating-button {
+  background: #00b2b2;
+  border-radius: 28px;
+  overflow: hidden;
+  height: 100%;
+  width: 100%;
+}
+
+#information .action-button .floating-button i {
+  line-height: 56px;
+  width: 100%;
+  height: 100%;
+  color: white;
+  font-size: 24px;
+  text-align: center;
+  transition: transform .5s cubic-bezier(0.175, 0.885, 0.32, 1.275), -webkit-transform .5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+#information .action-button .floating-button i:hover {
+  transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
+}
+
+body>.container {
+  width: calc(100% - 32px);
+  padding-left: 16px;
+  padding-right: 16px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  position: relative;
+  margin-top: 16px;
+}
+
+.parts-card, .stats-card {
+  padding: 0;
+  margin-bottom: 24px;
+}
+
+.parts-card--title, .stats-card--title {
+  font-size: 16px;
+  color: #212121;
+  font-weight: 600;
+  padding: 16px;
+}
+
+.stats-card--stats-wrapper .stats-card--stats-item {
+  width: 100%;
+  height: auto;
+}
+
+.clearfix:after {
+   content: " ";
+   display: block;
+   height: 0;
+   clear: both;
+}
+
+.parts-card {
+  padding-bottom: 48px;
+}
+
+.parts-card--title {
+  padding-bottom: 8px;
+}
+
+.parts-card--title i {
+  line-height: 24px;
+  color: #b3e5fc;
+}
+
+ul.parts-card--parts {
+  color: #969696;
+  list-style-type: none;
+  line-height: 24px;
+  position: relative;
+  height: auto;
+}
+
+ul.parts-card--parts li {
+  color: #969696;
+  transition: color 0.08s linear;
+  cursor: pointer;
+}
+
+ul.parts-card--parts li:not(.active):before {
+  content: "";
+  position: absolute;
+  margin-top: 7px;
+  left: 16px;
+  border-radius: 5px;
+  height: 10px;
+  width: 10px;
+  background: #b3e5fc;
+}
+
+ul.parts-card--parts li.active:before {
+  content: "";
+  position: absolute;
+  margin-top: 7px; /*24 - 10 / 2*/
+  left: 16px;
+  border-radius: 5px;
+  height: 10px;
+  width: 10px;
+  background: #03a9f4;
+}
+
+ul.parts-card--parts li:hover {
+  color: #00b2b2;
+}
+
+ul.parts-card--parts li:active {
+  color: #585858;
+}
+.parts-card a button {
+  color: #00b2b2;
+  margin-right: 16px;
+  margin-bottom: 8px;
+  float: right;
+}
+
+.stats-card--stats-item {
+  width: calc(50% - 32px) !important;
+  height: 64px;
+  padding: 8px 16px;
+}
+
+.stats-card--stats-item--name {
+  font-weight: 300;
+  font-size: 11px;
+  color: #969696;
+}
+
+.stats-card--stats-item--description {
+  font-weight: 400;
+  font-size: 15px;
+  margin-top: 2px;
+}
+
+.stats-card--stats-item:nth-child(odd) {
+  margin-left: 0;
+}
+.stats-card--stats-item:nth-child(even) {
+  margin-left: calc(50% - 16px);
+  margin-top: -56px;
+}
+.stats-card--stats-item--description:last-child {
+  padding-bottom: 8px;
+}
+
+.hide {
+  display: none;
+}

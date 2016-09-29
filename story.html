@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="libraries/materialdesign.css" type="text/css">
+    <link rel="stylesheet" href="story.css" type="text/css">
+    <link rel="stylesheet" href="libraries/Waves/waves.css" type="text/css">
+  </head>
+  <body>
+    <nav class="nav" id="appbar">
+      <div class="action action-nav-left">
+        <i class="material-icons">keyboard_arrow_left</i>
+      </div>
+      <div class="action action-nav-right">
+        <i class="material-icons">favorite</i>
+      </div>
+    </nav>
+    <div id="information">
+      <div class="cover">
+        <img src="images/Cover.png">
+      </div>
+      <div class="brief">
+        <div class="diagonal"></div>
+        <div class="text">
+          <div class="story--title">
+            <span>Loading...</span>
+          </div>
+          <div class="story--author">
+            By: <span>Loading...</span>
+          </div>
+          <div class="story--description">
+            <p>Loading...</p>
+          </div>
+        </div>
+      </div>
+      <a href="#">
+        <div class="action-button hoverable">
+          <div class="floating-button waves-effect waves-light">
+            <i class="material-icons">book</i>
+          </div>
+        </div>
+      </a>
+    </div>
+    <div class="container">
+      <div class="card parts-card">
+        <div class="parts-card--title">Parts</div>
+        <ul class="parts-card--parts">
+        </ul>
+        <a class="allparts-wrapper">
+          <button class="allparts waves-effect btn-flat">All Parts</button>
+        </a>
+      </div>
+      <div class="card stats-card">
+        <div class="stats-card--title">Statistics</div>
+        <div class="stats-card--stats-wrapper">
+          <div class="stats-card--stats-item">
+            <div class="stats-card--stats-item--name">Vote Count</div>
+            <div class="stats-card--stats-item--description story--vote-count">Loading...</div>
+          </div>
+          <div class="stats-card--stats-item">
+            <div class="stats-card--stats-item--name">Read Count</div>
+            <div class="stats-card--stats-item--description story--read-count">Loading...</div>
+          </div>
+          <div class="stats-card--stats-item">
+            <div class="stats-card--stats-item--name">Comment Count</div>
+            <div class="stats-card--stats-item--description story--comment-count">Loading...</div>
+          </div>
+          <div class="stats-card--stats-item">
+            <div class="stats-card--stats-item--name">Number of Parts</div>
+            <div class="stats-card--stats-item--description story--numparts">Loading...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="libraries/jQuery/jquery-2.2.3.min.js"></script>
+    <script src="libraries/Waves/waves.js"></script>
+    <script src="story.js"></script>
+  </body>
+</html>
