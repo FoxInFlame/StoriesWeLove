@@ -192,23 +192,27 @@ body>.container {
 }
 
 .clearfix:after {
-   content: " ";
-   display: block;
-   height: 0;
-   clear: both;
+  content: " ";
+  display: block;
+  height: 0;
+  clear: both;
 }
 
 .parts-card {
   padding-bottom: 48px;
+  transition: height .3s linear, padding-bottom .25s linear;
 }
 
 .parts-card--title {
   padding-bottom: 8px;
 }
 
-.parts-card--title i {
+#parts-card--order {
+  color: #03a9f4;
   line-height: 24px;
-  color: #b3e5fc;
+  position: absolute;
+  top: 14px;
+  cursor: pointer;
 }
 
 ul.parts-card--parts {

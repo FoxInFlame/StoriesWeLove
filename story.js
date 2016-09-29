@@ -74,6 +74,10 @@ function displayData(data) {
     }
     count++;
   });
+  if(count < 5) {
+    $(".parts-card a.allparts-wrapper").hide();
+    $(".parts-card").css("padding-bottom", "8px");
+  }
   $(".parts-card--parts li").click(function() {
     chrome.app.window.create("readClient/read.html?partID=" + $(this).data("part-id"), {
       id: "read-" + $(this).data("part-id"),
@@ -85,6 +89,29 @@ function displayData(data) {
       resizable: true,
       frame: "none"
     });
+  });
+  $("#parts-card--order").click(function() {
+    count = 0;
+    data.parts.reverse();
+    if($(this).html() == "keyboard_arrow_up") {
+      $(this).html("keyboard_arrow_down");
+    } else {
+      $(this).html("keyboard_arrow_up");
+    }
+    $(".parts-card--parts").html("");
+    data.parts.forEach(function(index) {
+    if(count < 5) {
+      $("<li data-part-id=\"" + index.id + "\"><span></span>" + index.title + "</li>").appendTo(".parts-card--parts"); // Use appendTo if it should be in oldest order
+      } else {
+        $("<li class=\"hide\" data-part-id=\"" + index.id + "\"><span></span>" + index.title + "</li>").appendTo(".parts-card--parts"); // Use appendTo if it should be in oldest order
+      }
+      count++;
+    });
+    console.log(data.parts);
+    if(count < 5) {
+      $(".parts-card a.allparts-wrapper").hide();
+      $(".parts-card").css("padding-bottom", "8px");
+    }
   });
 }
 
