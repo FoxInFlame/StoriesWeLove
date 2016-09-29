@@ -28,7 +28,8 @@ $.ajax({
     console.log(jqXHR);
     console.log(textStatus);
     console.log(errorThrown);
-  }
+  },
+  cache: false
 });
 
 
@@ -41,18 +42,22 @@ function getNextPrevious(id) {
     url: "https://www.wattpad.com/apiv2/info?id=" + id,
     type: "GET",
     success: function(data) {
-      console.log(data);
       $("#read_title").html(data.title);
       groupsArray = data.group;
       groupsArray.forEach(function(index, i) {
         if(index.ID == id) {
-          console.log(index);
           currentStory = index;
           previousStory = groupsArray[i - 1];
           nextStory = groupsArray[i + 1];
+          if(!previousStory) {
+            $("#read_previous").addClass("disabled").css("pointer-events", "none");
+          }
+          if(!nextStory) {
+            $("#read_next").addClass("disabled").css("pointer-events", "none");
+          }
           $("#read_previous").click(function() {
-            chrome.app.window.create("readClient/read.html?partID=" + previousStory.ID, {
-              id: "read-" + previousStory.ID,
+            chrome.app.window.create("readClient/read.html?partID=" + previousStory.ID.toString(), {
+              id: "read-" + previousStory.ID.toString(),
               outerBounds: {
               width: 480,
               height: 480
@@ -60,12 +65,13 @@ function getNextPrevious(id) {
               alwaysOnTop: true,
               resizable: true,
               frame: "none"
+            }, function() {
+              window.close();
             });
-            window.close();
           });
           $("#read_next").click(function() {
-            chrome.app.window.create("readClient/read.html?partID=" + nextStory.ID, {
-              id: "read-" + nextStory.ID,
+            chrome.app.window.create("readClient/read.html?partID=" + nextStory.ID.toString(), {
+              id: "read-" + nextStory.ID.toString(),
               outerBounds: {
               width: 480,
               height: 480
@@ -73,8 +79,9 @@ function getNextPrevious(id) {
               alwaysOnTop: true,
               resizable: true,
               frame: "none"
+            }, function() {
+              window.close();
             });
-            window.close();
           });
           return;
         }
@@ -84,6 +91,7 @@ function getNextPrevious(id) {
       console.log(jqXHR);
       console.log(textStatus);
       console.log(errorThrown);
-    }
+    },
+    cache: false
   });
 }
