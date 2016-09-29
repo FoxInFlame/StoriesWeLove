@@ -1,0 +1,98 @@
+@font-face {
+  font-family: 'Material Icons';
+  font-style: normal;
+  font-weight: 400;
+  src: url(../fonts/MaterialIcons-Regular.woff2) format('woff2'), url(../fonts/MaterialIcons-Regular.woff) format('woff'), url(../fonts/MaterialIcons-Regular.ttf) format('truetype');
+}
+
+.material-icons {
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;  /* Preferred icon size */
+  display: inline-block;
+  line-height: 1;
+  text-transform: none;
+  letter-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  direction: ltr;
+
+  /* Support for all WebKit browsers. */
+  -webkit-font-smoothing: antialiased;
+  /* Support for Safari and Chrome. */
+  text-rendering: optimizeLegibility;
+
+  /* Support for Firefox. */
+  -moz-osx-font-smoothing: grayscale;
+
+  /* Support for IE. */
+  font-feature-settings: 'liga';
+}
+
+
+html, body {
+  overflow: auto;
+}
+
+body {
+  background: #FFFFFF;
+  padding: 0;
+  margin: 0;
+}
+
+#controls {
+  color: #595959;
+  font-size: 12px;
+  background: #e69000;
+  float: right;
+  width: 100%;
+  height: 32px;
+  z-index: 50;
+  position: fixed;
+  text-align: center;
+}
+
+.left {
+  float: left;
+}
+
+.right {
+  float: right;
+}
+
+#controls i {
+  text-align: center;
+  font-size: 20px;
+  width: 32px;
+  height: 32px;
+  line-height: 32px;
+  transition: background .08s linear;
+}
+
+#controls i:hover {
+  background: #d48300;
+}
+
+#controls i:active {
+  background: #b87300;
+}
+
+#controls div:nth-child(2) {
+  display: inline;
+}
+
+#controls #read_title {
+  color: white;
+  font-size: 14px;
+  line-height: 32px;
+}
+
+#main {
+  position: absolute;
+  top: 32px;
+  width: calc(100% - 32px);
+  padding: 16px;
+  -webkit-user-select: text;
+  cursor: text;
+}
