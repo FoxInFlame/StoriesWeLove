@@ -121,7 +121,7 @@ $("#searchStory_input").donetyping(function() {
       $.ajax({
         url: url,
         type: "GET",
-        timeout: 5000,
+        timeout: 10000,
         success: function(data, textStatus, jqXHR) {
           console.log("Query to: http://www.foxinflame.tk/stories/api/search.php?query=" + $("#searchStory_input").val().replaceAll(" ", "%2B"));
           console.log(textStatus);
