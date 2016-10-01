@@ -27,6 +27,7 @@ String.prototype.contains = function(string) {
   return (this.indexOf(string) != -1);
 };
 
+// [+] ===================REPLACEALL===================== [+]
 String.prototype.replaceAll = function(search, replacement) {
     var target = this;
     return target.replace(new RegExp(search, 'g'), replacement);
@@ -71,6 +72,45 @@ String.prototype.replaceAll = function(search, replacement) {
     });
 })(jQuery);
 
+// [+] ===============GETPARAMETERBYURL================== [+]
+function getParameterByName(name, url) {
+    if (!url) url = window.location.href;
+    name = name.replace(/[\[\]]/g, "\\$&");
+    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, " "));
+}
+
+// [+] ====================READTIME====================== [+]
+function readTime(characterCount, format) {
+  est_wordCount = parseInt(characterCount) / 6.195;
+  est_wordCount = Math.round(est_wordCount);
+  est_minutes = est_wordCount / 200;
+  est_minutes = Math.round(est_minutes);
+  if(!format) {
+    return est_minutes.toString();
+  }
+  if(est_minutes == 1) {
+    suffix = " minute";
+  } else {
+    suffix = " minutes";
+  }
+  if(est_minutes > 60) {
+    est_hours = est_minutes / 60;
+    est_hours = Math.round(est_hours);
+    if(est_hours == 1) {
+      suffix = " hour";
+    } else {
+      suffix = " hours";
+    }
+    return est_hours.toString() + suffix;
+  } else {
+    return est_minutes.toString() + suffix;
+  }
+}
+
 
 $("#searchStory_input").donetyping(function() {
   if(navigator.onLine) {
@@ -81,7 +121,7 @@ $("#searchStory_input").donetyping(function() {
       $.ajax({
         url: url,
         type: "GET",
-        timeout: 10000,
+        timeout: 5000,
         success: function(data, textStatus, jqXHR) {
           console.log("Query to: http://www.foxinflame.tk/stories/api/search.php?query=" + $("#searchStory_input").val().replaceAll(" ", "%2B"));
           console.log(textStatus);
@@ -94,7 +134,7 @@ $("#searchStory_input").donetyping(function() {
           console.log(textStatus);
           console.log(errorThrown);
         },
-        cache: false
+        cache: true
       });
     } else {
       $("#searchStory_status").text("");
@@ -138,7 +178,7 @@ function formatSearchResults(type, data) {
             "<div class=\"meta\">" +
               "<span><i class=\"material-icons\">mode_comment</i><span class=\"searchResult-comments\">" + index.commentCount + " comments</span></span>" +
               "<span><i class=\"material-icons\">visibility</i><span class=\"searchResult-views\">" + index.readCount + " views</span></span>" +
-              "<span><i class=\"material-icons\">access_time</i><span class=\"searchResult-readingTime\">5 minutes</span></span>" +
+              "<span><i class=\"material-icons\">access_time</i><span class=\"searchResult-readingTime\">" + readTime(index["length"], "format") + "</span></span>" +
             "</div>" +
           "</div>" +
         "</div>"
@@ -153,16 +193,6 @@ function formatSearchResults(type, data) {
 
 
 
-// [+] ===============GETPARAMETERBYURL================== [+]
-function getParameterByName(name, url) {
-    if (!url) url = window.location.href;
-    name = name.replace(/[\[\]]/g, "\\$&");
-    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-        results = regex.exec(url);
-    if (!results) return null;
-    if (!results[2]) return '';
-    return decodeURIComponent(results[2].replace(/\+/g, " "));
-}
 
 
 function initClick() {
@@ -233,7 +263,7 @@ function displayData(data) {
     $(".parts-card").css("padding-bottom", "8px");
   } else {
     $(".parts-card a.allparts-wrapper").show();
-    $(".parts-card button.allparts").html("Collapse");
+    $(".parts-card button.allparts").html("All Parts");
     $(".parts-card").css("padding-bottom", "48px");
   }
   li_click_init();
@@ -246,6 +276,7 @@ function displayData(data) {
       $(this).html("keyboard_arrow_up");
     }
     $(".parts-card--parts").html("");
+    count = 0;
     data.parts.forEach(function(index) {
       if(count < 5) {
         $("<li data-part-id=\"" + index.id + "\"><span></span>" + index.title + "</li>").appendTo(".parts-card--parts"); // Use appendTo if it should be in oldest order
@@ -259,7 +290,12 @@ function displayData(data) {
     });
     if(count < 5) {
       $(".parts-card a.allparts-wrapper").hide();
+      $(".parts-card button.allparts").html("All Parts");
       $(".parts-card").css("padding-bottom", "8px");
+    } else {
+      $(".parts-card a.allparts-wrapper").show();
+      $(".parts-card button.allparts").html("All Parts");
+      $(".parts-card").css("padding-bottom", "48px");
     }
     li_click_init();
   });
