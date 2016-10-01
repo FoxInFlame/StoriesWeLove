@@ -21,6 +21,7 @@
     "unlimitedStorage",
     "notifications",
     "alwaysOnTopWindows",
-    "<all_urls>"
+    "<all_urls>",
+    "unlimitedStorage"
   ]
 }
