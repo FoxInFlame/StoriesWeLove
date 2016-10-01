@@ -169,6 +169,7 @@ body {
 
 #storyDetails {
   margin-left: 360px;
+  display: none;
 }
 
 #information {
