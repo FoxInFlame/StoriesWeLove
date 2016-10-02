@@ -11,9 +11,15 @@
         <i id="appbar-downloads" class="waves-effect waves-light material-icons">file_download</i>
         <i id="appbar-back" class="waves-effect waves-light material-icons">navigate_before</i>
       </div>
-      <div class="action action-nav-right">
-        <i id="appbar-settings" class="waves-effect waves-light material-icons">more_vert</i>
-      </div>
+      <a data-activates="mainMenu" href="#" class="dropdown-button">
+        <div class="action action-nav-right">
+          <i id="appbar-settings" class="waves-effect waves-light material-icons">more_vert</i>
+        </div>
+      </a>
+      <ul class="dropdown-content" id="mainMenu">
+        <li class="waves-effect"><a href="javascript:;" id="mainMenu_openSettings">Settings</a></li>
+        <li class="waves-effect"><a href="#">WattPad Home</a></li>
+      </ul>
     </nav>
     <div id="search">
       <div class="searchInput input-field">
@@ -83,6 +89,7 @@
      </div>
     </div>
     <script src="libraries/jQuery/jquery-2.2.3.min.js"></script>
+    <script src="libraries/easing.js"></script>
     <script src="libraries/Waves/waves.js"></script>
     <script src="story.js"></script>
   </body>
