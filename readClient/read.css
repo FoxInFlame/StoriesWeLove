@@ -85,9 +85,7 @@ body {
   display: inline-block;
   text-align: center;
   height: 32px;
-  width: calc(100% - 96px);
-  padding-left: 64px;
-  padding-right: 32px;
+  width: 100%;
   position: absolute;
   left: 0;
   pointer-events: none;
@@ -106,5 +104,8 @@ body {
   width: calc(100% - 32px);
   padding: 16px;
   -webkit-user-select: text;
+}
+
+#main p {
   cursor: text;
 }
