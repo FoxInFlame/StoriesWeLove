@@ -45,8 +45,11 @@ body {
   display: none;
 }
 
-
-
+.dropdown-content {
+  top: 8px !important;
+  right: 8px !important;
+  left: auto !important;
+}
 
 
 #search {
@@ -154,6 +157,14 @@ body {
 }
 
 
+#search_loadMore {
+  height: 50px;
+  line-height: 50px;
+  color: #ffa000;
+  font-weight:bold;
+  cursor: pointer;
+  font-size: 14px;
+}
 
 
 
