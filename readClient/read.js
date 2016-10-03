@@ -1,3 +1,32 @@
+// [+] ================================================== [+]
+// [+] ------------------VARIABLES----------------------- [+]
+// [+] ================================================== [+]
+var sync_fontSize;
+var sync_stories;
+
+
+
+function getStorage(callback) {
+  chrome.storage.sync.get({
+    readClient: {
+      fontSize: 12,
+      //wpm: 200
+    },
+    stories: []
+  }, function(data) {
+    console.log(data);
+    sync_fontSize = data.readClient.fontSize;
+    sync_stories = data.stories;
+    if(callback) {
+      callback(data);
+    }
+  });
+}
+
+getStorage(function(data) {
+  $("#main").css("font-size", sync_fontSize + "px");
+});
+
 $("#read_close").click(function() {
   window.close();
 });
