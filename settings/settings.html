@@ -6,11 +6,60 @@
     <link rel="stylesheet" href="../libraries/Waves/waves.css" type="text/css">
   </head>
   <body>
+    <nav class="nav" id="appbar">
+      <span class="nav-title">Settings</span>
+    </nav>
     <div id="main">
-      <h1>Settings</h1>
+      <div class="section oneline">
+        <span class="section-title">Reading</span>
+        <a href="#" class="dropdown-button" data-activates="setting_fontSize">
+          <div class="item twoline">
+            <i class="material-icons">font_download</i>
+            <div class="basic">
+              <span class="title">Font Size</span>
+              <span class="subtitle"><span id="setting_fontSize_current"></span>px</span>
+            </div>
+          </div>
+        </a>
+        <ul class="dropdown-content z-depth-1" id="setting_fontSize">
+          <li data-size="10" class="waves-effect">10px</li>
+          <li data-size="12" class="waves-effect">12px</li>
+          <li data-size="14" class="waves-effect">14px</li>
+          <li data-size="16" class="waves-effect">16px</li>
+          <li data-size="18" class="waves-effect">18px</li>
+        </ul>
+        <div class="item inputline">
+          <i class="material-icons">timer</i>
+          <div class="input">
+            <span class="title">Custom Reading Speed</span>
+            I can read <input type="text" class="subtitle" id="setting_custom_wpm"> words per minute
+          </div>
+        </div>
+      </div>
+      <div class="section">
+        <div class="section oneline">
+        <span class="section-title">Sound</span>
+        <div class="item">
+          <i class="material-icons">speaker</i>
+          <div class="basic">
+            <span class="title">Interruptions</span>
+          </div>
+        </div>
+        <div class="item twoline">
+          <i class="material-icons">timer</i>
+          <div class="basic">
+            <span class="title">Ringtone</span>
+            <span class="subtitle">Titania</span>
+          </div>
+        </div>
+      </div>
+      </div>
     </div>
     <script src="../libraries/jQuery/jquery-2.2.3.min.js"></script>
+    <script src="../libraries/easing.js"></script>
+    <script src="../libraries/dropdown.js"></script>
     <script src="../libraries/Waves/waves.js"></script>
+    <script src="../libraries/functions.js"></script>
     <script src="settings.js"></script>
   </body>
 </html>

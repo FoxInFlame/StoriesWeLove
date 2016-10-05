@@ -1,0 +1,134 @@
+html, body {
+  overflow: visible;
+}
+
+body {
+  background: white;
+  margin: 0;
+  padding: 0;
+  overflow: visible;
+  overflow-x: hidden;
+  color: rgba(0, 0, 0, 0.87);
+}
+
+#appbar {
+  height: 56px;
+  width: 100%;
+  background: #ffa000;
+  z-index: 100;
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+#appbar .nav-title {
+  font-size: 20px;
+  color: white;
+  line-height: 56px;
+  padding-left: 32px;
+}
+
+h1 {
+  margin: 16px 0 16px 8px;
+  font-weight: 400;
+  font-size: 26px;
+}
+
+#main {
+  margin-top: 64px;
+}
+
+#main .section .section-title {
+  height: 48px;
+  display: block;
+  line-height: 48px;
+  padding: 0 16px;
+  font-size: 14px;
+  color: #ffa000;
+  font-weight: 600;
+}
+
+#main .section .item {
+  min-height: 47px;
+  width: calc(100% - 32px);
+  padding: 0 16px;
+  font-size: 16px;
+  position: relative;
+  border-bottom: rgba(0, 0, 0, 0.12) 1px solid;
+}
+
+#main .section .item .material-icons {
+  font-size: 24px;
+  display: inline;
+  line-height: 48px;
+}
+
+#main .section .item .basic, #main .section .item .input {
+  position: absolute;
+  display: block;
+  line-height: 48px;
+  margin: 0;
+  top: 0;
+  left: 0;
+  height: 47px;
+  width: calc(100% - 88px);
+  padding: 0 16px 0 72px;
+}
+
+#main .section .item.twoline {
+  height: 71px;
+}
+
+#main .section .item.twoline .material-icons {
+  line-height: 72px;
+}
+
+#main .section .item.twoline .basic .title {
+  display: block;
+  line-height: 0;
+  padding-top: 24px;
+}
+
+#main .section .item.twoline .basic .subtitle {
+  color: rgba(0, 0, 0, 0.54);
+  font-size: 14px;
+  display: block;
+  line-height: 0;
+  padding-top: 24px;
+}
+
+#setting_fontSize {
+  margin-top: 8px;
+  left: 72px !important;
+}
+#setting_fontSize li {
+  width: calc(100% - 16px);
+  padding-left: 16px;
+  line-height: 48px;
+}
+
+#main .section .item.inputline {
+  height: 95px;
+}
+
+#main .section .item.inputline .input {
+  color: rgba(0, 0, 0, 0.54);
+  font-size: 14px;
+  line-height: 0;
+  padding-top: 24px;
+}
+
+#main .section .item.inputline .input .title {
+  font-size: 16px;
+  color: rgba(0, 0, 0, 0.87);
+  display: block;
+  line-height: 0;
+}
+
+#main .section .item.inputline .input .subtitle {
+  margin: 0 0 10px 0;
+  width: 100px;
+  font-size: 14px;
+  height: 2.5rem;
+  padding-top: 16px;
+}
