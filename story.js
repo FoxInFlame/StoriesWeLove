@@ -5,7 +5,7 @@
 readClient: {
   fontSize: 12
 },
-stories [
+stories: [
   {
     "id": 123123
     "title": "TITLE GOES HERE"
@@ -16,7 +16,11 @@ stories [
   {
     
   }
-]
+],
+readPosition: {
+  123123: 123415
+  storyId: chapterId
+}
 
 
 
@@ -31,20 +35,23 @@ Reading Speed Calculating References:
 var sync_wpm;
 var sync_stories;
 var search_posx;
+var detailedInformation_id;
 
 
 
 function getStorage(callback) {
-  chrome.storage.sync.get({
+  chrome.storage.local.get({
     readClient: {
       //fontSize: 12,
       wpm: 200
     },
-    stories: []
+    stories: [],
+    readPosition: {}
   }, function(data) {
     console.log(data);
     sync_wpm = data.readClient.wpm;
     sync_stories = data.stories;
+    sync_readPosition = data.readPosition;
     if(callback) {
       callback(data);
     }
@@ -149,12 +156,13 @@ $("#searchStory_input").donetyping(function() {
         type: "GET",
         success: function(data, textStatus, jqXHR) {
           console.log("Query to: http://www.foxinflame.tk/stories/api/search.php?query=" + $("#searchStory_input").val().replaceAll(" ", "%2B"));
+          console.log(data);
           console.log(textStatus);
           console.log($.parseJSON(data));
           formatSearchResults("online", $.parseJSON(data));
         },
         error: function(jqXHR, textStatus, errorThrown) {
-          console.log(jqXHR);
+          console.log(jqXHR.responseText);
           console.log(textStatus);
           console.log(errorThrown);
         },
@@ -291,6 +299,7 @@ function initClick() {
 }
 
 function detailedInformation(id) {
+  detailedInformation_id = id;
   $("#search").css("margin-left", "-360px").hide();
   $("#storyDetails").css("margin-left", "0").show();
   $("#appbar-downloads").hide(function() {
@@ -298,30 +307,46 @@ function detailedInformation(id) {
   });
   $("#download_all_parts i").text("cached");
   getStorage(function() {
+    $("#download_all_parts i").text("file_download");
     for(var i=0;i<sync_stories.length;i++) {
       if(sync_stories[i].id == id) {
+        $("#information .action-button .floating-button").css("background", "#00a000");
         $("#download_all_parts i").text("check");
       } else {
+        $("#information .action-button .floating-button").css("background", "#00b2b2");
         $("#download_all_parts i").text("file_download");
       }
     }
-  });
-  $.ajax({
-    url: "https://www.wattpad.com/api/v3/stories/" + id,
-    type: "GET",
-    success: function(data) {
-      console.log(data);
-      displayData(data);
-    },
-    error: function(jqXHR, textStatus, errorThrown) {
-      console.log(jqXHR);
-      console.log(textStatus);
-      console.log(errorThrown);
-    }
+    $.ajax({
+      url: "https://www.wattpad.com/api/v3/stories/" + id,
+      type: "GET",
+      success: function(data) {
+        console.log(data);
+        if(sync_readPosition[id]) {
+          displayData(data, sync_readPosition[id])
+        } else {
+          displayData(data);
+        }
+      },
+      error: function(jqXHR, textStatus, errorThrown) {
+        console.log(jqXHR);
+        console.log(textStatus);
+        console.log(errorThrown);
+      }
+    });
   });
 }
 
-function displayData(data) {
+function displayData(data, chapter) {
+  function searchForId(chapterId) {
+    var indexchap;
+    data.parts.forEach(function(index, i) {
+      if(index.id == chapterId) {
+        indexchap = i;
+      }
+    });
+    return indexchap;
+  }
   var xhr = new XMLHttpRequest();
   var imgSrc;
   xhr.open('GET', data.cover, true);
@@ -337,30 +362,76 @@ function displayData(data) {
   $(".story--read-count").html(data.readCount);
   $(".story--comment-count").html(data.commentCount);
   $(".story--numparts").html(data.numParts);
+  var maturity = (data.mature) ? "Mature" : "Not Mature";
+  $(".story--maturity").html(maturity);
+  $(".story--language").html(data.language.name);
+  data.user.fullname = data.user.fullname || "N/A";
+  $(".story--fullname").html(data.user.fullname);
+  $.ajax({
+    url: "http://www.foxinflame.tk/stories/api/getcategories.php",
+    type: "GET",
+    success: function(dataCategories) {
+      dataCategories = $.parseJSON(dataCategories.match("{(.*)}")[0]);
+      $(".story--category").html(dataCategories[data.categories[0]]);
+    },
+    error: function(jqXHR, textStatus, thrownError) {
+      console.log(jqXHR);
+      console.log(textStatus);
+      console.log(thrownError);
+    }
+  })
   $(".parts-card--parts").html("");
   var count = 0;
   data.parts.reverse();
+  if(chapter) array_count = searchForId(chapter);
   data.parts.forEach(function(index) {
-    if(count < 5) {
-      $("<li data-part-id=\"" + index.id + "\"><span></span>" + index.title + "</li>").appendTo(".parts-card--parts"); // Use appendTo if it should be in oldest order
+    if(!chapter) {
+      if(count < 5) {
+        $("<li data-part-id=\"" + index.id + "\"><span></span>" + index.title + "</li>").appendTo(".parts-card--parts"); // Use appendTo if it should be in oldest order
+      } else {
+        $("<li class=\"hide\" data-part-id=\"" + index.id + "\"><span></span>" + index.title + "</li>").appendTo(".parts-card--parts"); // Use appendTo if it should be in oldest order
+      }
     } else {
-      $("<li class=\"hide\" data-part-id=\"" + index.id + "\"><span></span>" + index.title + "</li>").appendTo(".parts-card--parts"); // Use appendTo if it should be in oldest order
+      if(count < (array_count + 3) && count > (array_count - 3)) {
+        if(count == array_count){
+          $("<li class=\"active\" data-part-id=\"" + index.id + "\"><span></span>" + index.title + "</li>").appendTo(".parts-card--parts");
+        } else {
+          $("<li data-part-id=\"" + index.id + "\"><span></span>" + index.title + "</li>").appendTo(".parts-card--parts");
+        }
+      } else {
+        $("<li class=\"hide\" data-part-id=\"" + index.id + "\"><span></span>" + index.title + "</li>").appendTo(".parts-card--parts");
+      }
     }
     count++;
   });
-  if(count < 5) {
-    $(".parts-card a.allparts-wrapper").hide();
-    $(".parts-card button.allparts").html("All Parts");
-    $(".parts-card").css("padding-bottom", "8px");
+  if(!chapter) {
+    if(count < 5) {
+      $(".parts-card a.allparts-wrapper").hide();
+      $(".parts-card button.allparts").html("All Parts");
+      $(".parts-card").css("padding-bottom", "8px");
+    } else {
+      $(".parts-card a.allparts-wrapper").show();
+      $(".parts-card button.allparts").html("All Parts");
+      $(".parts-card").css("padding-bottom", "48px");
+    }
   } else {
-    $(".parts-card a.allparts-wrapper").show();
-    $(".parts-card button.allparts").html("All Parts");
-    $(".parts-card").css("padding-bottom", "48px");
+    console.log(count);
+    if(count <= ($(".parts-card--parts li:not(.hide)").length)) {
+      $(".parts-card a.allparts-wrapper").hide();
+      $(".parts-card button.allparts").html("All Parts");
+      $(".parts-card").css("padding-bottom", "8px");
+    } else {
+      $(".parts-card a.allparts-wrapper").show();
+      $(".parts-card button.allparts").html("All Parts");
+      $(".parts-card").css("padding-bottom", "48px");
+    }
   }
   li_click_init();
   $("#parts-card--order").click(function() {
     count = 0;
     data.parts.reverse();
+    array_count = null;
+    if(chapter) array_count = searchForId(chapter);
     if($(this).text() == "keyboard_arrow_up") {
       $(this).html("keyboard_arrow_down");
     } else {
@@ -369,12 +440,21 @@ function displayData(data) {
     $(".parts-card--parts").html("");
     count = 0;
     data.parts.forEach(function(index) {
-      if(count < 5) {
-        $("<li data-part-id=\"" + index.id + "\"><span></span>" + index.title + "</li>").appendTo(".parts-card--parts"); // Use appendTo if it should be in oldest order
+      if(!chapter) {
+        if(count < 5) {
+          $("<li data-part-id=\"" + index.id + "\"><span></span>" + index.title + "</li>" ).appendTo(".parts-card--parts"); // Use appendTo if it should be in oldest order
+        } else {
+          $("<li class=\"hide\" data-part-id=\"" + index.id + "\"><span></span>" + index.title + "</li>").appendTo(".parts-card--parts"); // Use appendTo if it should be in oldest order
+        }
       } else {
-        $("<li class=\"hide\" data-part-id=\"" + index.id + "\"><span></span>" + index.title + "</li>").appendTo(".parts-card--parts"); // Use appendTo if it should be in oldest order
-        if($(".parts-card button.allparts").html() == "Collapse") {
-          $(".parts-card--parts li.hide").show();
+        if(count < (array_count + 3) && count > (array_count - 3)) {
+          if(count == array_count){
+            $("<li class=\"active\" data-part-id=\"" + index.id + "\"><span></span>" + index.title + "</li>").appendTo(".parts-card--parts");
+          } else {
+            $("<li data-part-id=\"" + index.id + "\"><span></span>" + index.title + "</li>").appendTo(".parts-card--parts");
+          }
+        } else {
+          $("<li class=\"hide\" data-part-id=\"" + index.id + "\"><span></span>" + index.title + "</li>").appendTo(".parts-card--parts");
         }
       }
       count++;
@@ -418,17 +498,39 @@ function li_click_init() {
   });
 }
 
-$("#download_all_parts").on("click", function() {
-  if($("#download_all_parts i").text() == "file_download") {
-    
+$("#download_all_parts").hover(function() {
+  if($("#download_all_parts i").text() == "check") {
+    $("#download_all_parts i").text("delete");
+    $("#information .action-button .floating-button").css("background", "#ff2000");
+  }
+}, function() {
+  if($("#download_all_parts i").text() == "delete") {
+    $("#download_all_parts i").text("check");
+    $("#information .action-button .floating-button").css("background", "#00a000");
   }
 });
-function download_all_chapters(id) {
+
+$("#download_all_parts").on("click", function() {
+  if($("#download_all_parts i").text() == "file_download") {
+    download_all_chapters(detailedInformation_id, function(status, message) {
+      console.log(status);
+      if(status == "success") {
+        $("#information .action-button .floating-button").css("background", "#00a000");
+        $("#download_all_parts i").text("check");
+      } else if(status == "error") {
+        console.error(message);
+      }
+    });
+  } else if($("#download_all_parts i").text() == "delete") {
+    console.log("delete");
+  }
+});
+function download_all_chapters(id, callback) {
   var contains = false;
   getStorage(function() {
     sync_stories.forEach(function(index) {
       if(index.id == id) {
-        console.error("It's already downloaded!");
+        callback("error", "Already Downloaded");
         contains = true;
         return;
       }
@@ -467,7 +569,7 @@ function download_all_chapters(id) {
           console.log(textStatus);
           console.log(errorThrown);
         }
-      })
+      });
     });
     function wait() {
       if(length > count) {
@@ -478,9 +580,10 @@ function download_all_chapters(id) {
     }
     function push() {
       sync_stories.push(storyDetails);
-      chrome.storage.sync.set({
+      chrome.storage.local.set({
         stories: sync_stories
       });
+      callback("success", "Successfully Downloaded");
     }
   }
 }
