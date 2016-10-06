@@ -89,12 +89,23 @@ body {
   padding: 0 16px;
   position: relative;
   padding-bottom: 16px;
+  cursor: pointer;
+  transition: background 0.1s ease;
+}
+
+#searchResults .searchResult:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+#searchResults .searchResult:active {
+  background: rgba(0, 0, 0, 0.1);
 }
 
 #searchResults .searchResult .searchResult-cover {
   height: 100px; /*Cover ratio is 400x256 = 25:16*/
   width: 64px;
-  cursor: pointer;
+  position: absolute;
+  top: 8px;
 }
 
 #searchResults .searchResult .searchResult-cover img {
@@ -104,7 +115,7 @@ body {
 
 #searchResults .searchResult .searchResult-information {
   position: absolute;
-  top: 0;
+  top: 8px;
   left: 80px; /*Cover 64px + padding 16px*/
   height: 100px;
   margin-left: 8px;
@@ -128,8 +139,10 @@ body {
   right: -16px; /*Out of padding*/
   width: 25%;
   height: 24px;
-  background: linear-gradient(to right, rgba(255, 255, 255, 0), rgba(235, 238, 240, 1) 50%);
+  opacity: 0; /*Remove this for fade out*/
+  background: linear-gradient(to right, rgba(255, 255, 255, 0), rgba(0, 0, 0, 1) 50%);
 }
+
 
 #searchResults .searchResult .searchResult-information .searchResult-author {
   font-size: 14px;

@@ -126,6 +126,21 @@ $("#appbar-back").on("click", function() {
   });
   $("body").scrollTop(search_posx); // This comes after because #search isn't visible before
 });
+$("#appbar-downloads").on("click", function() {
+  chrome.app.window.create("downloads.html", {
+    id: "downloads",
+    outerBounds: {
+      width: 400,
+      height: 560
+    },
+    alwaysOnTop: false,
+    resizable: false,
+    frame: {
+      type: "chrome",
+      color: "#e69000"
+    }
+  });
+});
 $("#mainMenu_openSettings").on("click", function() {
   chrome.app.window.create("settings/settings.html", {
     id: "settings",
@@ -174,7 +189,17 @@ $("#searchStory_input").donetyping(function() {
     if($.trim($("#searchStory_input").val()) !== "") {
       $("#searchStory_status").text("Searching Locally...");
       getStorage(function() {
-        formatSearchResults("offline", sync_stories);
+        var searchResult_Array = [];
+        for(var i=0;i<sync_stories.length;i++) {
+          if(sync_stories[i].title.toLowerCase().indexOf($("#searchStory_input").val().toLowerCase()) !== -1) {
+            searchResult_Array.push(sync_stories[i]);
+          } else if(sync_stories[i].user.name.toLowerCase().indexOf($("#searchStory_input").val().toLowerCase()) !== -1) {
+            searchResult_Array.push(sync_stories[i]);
+          } else if(sync_stories[i].description.toLowerCase().indexOf($("#searchStory_input").val().toLowerCase()) !== -1) {
+            searchResult_Array.push(sync_stories[i]);
+          }
+        }
+        formatSearchResults("offline", searchResult_Array);
       });
     } else {
       $("#searchStory_statue").text("");
@@ -184,14 +209,14 @@ $("#searchStory_input").donetyping(function() {
 });
 
 function formatSearchResults(type, data, offset) {
-  if(!type || !data) {
+  if(!type) {
     console.error("Type or Data could not be read.");
     return;
   }
   if(type == "offline") {
-    $("#searchStory_status").text(sync_stories.length + " stories found.");
+    $("#searchStory_status").text(data.length + " stories found.");
     $("#searchResults").html("");
-    sync_stories.forEach(function(index, i) {
+    data.forEach(function(index, i) {
       $("#searchResults").append(
         "<div class=\"searchResult\" data-id=\"" + index.id + "\">" +
           "<div class=\"searchResult-cover\">" +
@@ -317,10 +342,10 @@ function searchshowMoreButton(offset) {
 
 
 function initClick() {
-  $("#searchResults .searchResult .searchResult-cover").on("click", function() {
+  $("#searchResults .searchResult").on("click", function() {
     search_posx = parseInt($("body").scrollTop());
     $("body").scrollTop(0);
-    detailedInformation($(this).parent().data("id"));
+    detailedInformation($(this).data("id"));
   });
 }
 
@@ -344,22 +369,31 @@ function detailedInformation(id) {
         $("#download_all_parts i").text("file_download");
       }
     }
-    $.ajax({
-      url: "https://www.wattpad.com/api/v3/stories/" + id,
-      type: "GET",
-      success: function(data) {
-        if(sync_readPosition[id]) {
-          displayData(data, sync_readPosition[id])
-        } else {
-          displayData(data);
+    if(navigator.onLine) {
+      $.ajax({
+        url: "https://www.wattpad.com/api/v3/stories/" + id,
+        type: "GET",
+        success: function(data) {
+          if(sync_readPosition[id]) {
+            displayData(data, sync_readPosition[id])
+          } else {
+            displayData(data);
+          }
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+          console.log(jqXHR);
+          console.log(textStatus);
+          console.log(errorThrown);
         }
-      },
-      error: function(jqXHR, textStatus, errorThrown) {
-        console.log(jqXHR);
-        console.log(textStatus);
-        console.log(errorThrown);
+      });
+    } else {
+      for(var i=0;i<sync_stories.length;i++) {
+        if(sync_stories[i].id == id) {
+          displayData(sync_stories[i]);
+          break;
+        }
       }
-    });
+    }
   });
 }
 
@@ -651,3 +685,20 @@ function download_all_chapters(id, callback) {
     }
   }
 }
+
+
+// [+] ================================================== [+]
+// [+] -------------------MESSAGES----------------------- [+]
+// [+] ================================================== [+]
+
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+  if(request.detailedInformation) {
+    detailedInformation(request.detailedInformation);
+    sendResponse({
+      status: "opened"
+    });
+  }
+  if(request.getNextPrevious) {
+    
+  }
+});
