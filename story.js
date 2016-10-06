@@ -48,7 +48,6 @@ function getStorage(callback) {
     stories: [],
     readPosition: {}
   }, function(data) {
-    console.log(data);
     sync_wpm = data.readClient.wpm;
     sync_stories = data.stories;
     sync_readPosition = data.readPosition;
@@ -145,7 +144,9 @@ $("#mainMenu_openSettings").on("click", function() {
 
 //   [+] ====================SEARCH======================== [+]
 $("#searchStory_input").donetyping(function() {
-  getStorage();
+  getStorage(function(data) {
+    console.log(data);
+  });
   if(navigator.onLine) {
     var url;
     if($.trim($("#searchStory_input").val()) !== "") {
@@ -156,9 +157,6 @@ $("#searchStory_input").donetyping(function() {
         type: "GET",
         success: function(data, textStatus, jqXHR) {
           console.log("Query to: http://www.foxinflame.tk/stories/api/search.php?query=" + $("#searchStory_input").val().replaceAll(" ", "%2B"));
-          console.log(data);
-          console.log(textStatus);
-          console.log($.parseJSON(data));
           formatSearchResults("online", $.parseJSON(data));
         },
         error: function(jqXHR, textStatus, errorThrown) {
@@ -173,7 +171,15 @@ $("#searchStory_input").donetyping(function() {
       $("#searchResults").html("");
     }
   } else {
-    $("#searchStory_status").text("Searching Locally...");
+    if($.trim($("#searchStory_input").val()) !== "") {
+      $("#searchStory_status").text("Searching Locally...");
+      getStorage(function() {
+        formatSearchResults("offline", sync_stories);
+      });
+    } else {
+      $("#searchStory_statue").text("");
+      $("#searchResults").html("");
+    }
   }
 });
 
@@ -183,7 +189,27 @@ function formatSearchResults(type, data, offset) {
     return;
   }
   if(type == "offline") {
-    
+    $("#searchStory_status").text(sync_stories.length + " stories found.");
+    $("#searchResults").html("");
+    sync_stories.forEach(function(index, i) {
+      $("#searchResults").append(
+        "<div class=\"searchResult\" data-id=\"" + index.id + "\">" +
+          "<div class=\"searchResult-cover\">" +
+            "<img id=\"searchResult-cover-" + i + "\" src=\"images/OfflineCover.png\">" +
+          "</div>" +
+          "<div class=\"searchResult-information\">" +
+            "<span class=\"searchResult-title\">" + index.title + "</span>" +
+            "<span class=\"searchResult-author\">" + index.user.name + "</span>" +
+            "<div class=\"meta\">" +
+              "<span><i class=\"material-icons\">mode_comment</i><span class=\"searchResult-comments\">" + index.commentCount + " comments</span></span>" +
+              "<span><i class=\"material-icons\">visibility</i><span class=\"searchResult-views\">" + index.readCount + " views</span></span>" +
+              "<span><i class=\"material-icons\">access_time</i><span class=\"searchResult-readingTime\">" + readTime(index["length"], "format") + "</span></span>" +
+            "</div>" +
+          "</div>" +
+        "</div>"
+      );
+    });
+    initClick();
   }
   if(type == "online_more") {
     $("#searchStory_status").text(data.total + " stories found. Displaying " + (data.stories.length + parseInt(offset)).toString() + ".");
@@ -312,6 +338,7 @@ function detailedInformation(id) {
       if(sync_stories[i].id == id) {
         $("#information .action-button .floating-button").css("background", "#00a000");
         $("#download_all_parts i").text("check");
+        break; // Required to break out of loop
       } else {
         $("#information .action-button .floating-button").css("background", "#00b2b2");
         $("#download_all_parts i").text("file_download");
@@ -321,7 +348,6 @@ function detailedInformation(id) {
       url: "https://www.wattpad.com/api/v3/stories/" + id,
       type: "GET",
       success: function(data) {
-        console.log(data);
         if(sync_readPosition[id]) {
           displayData(data, sync_readPosition[id])
         } else {
@@ -415,7 +441,6 @@ function displayData(data, chapter) {
       $(".parts-card").css("padding-bottom", "48px");
     }
   } else {
-    console.log(count);
     if(count <= ($(".parts-card--parts li:not(.hide)").length)) {
       $(".parts-card a.allparts-wrapper").hide();
       $(".parts-card button.allparts").html("All Parts");
@@ -522,11 +547,34 @@ $("#download_all_parts").on("click", function() {
       }
     });
   } else if($("#download_all_parts i").text() == "delete") {
-    console.log("delete");
+    deleteStory(detailedInformation_id);
+  }
+  function deleteStory(id) {
+    getStorage(function() {
+      sync_stories.forEach(function(index, i) {
+        if(index.id == id.toString()) {
+          sync_stories.splice(i, 1);
+        }
+      });
+      chrome.storage.local.set({
+        stories: sync_stories
+      }, function() {
+        $("#information .action-button .floating-button").css("background", "#00b2b2");
+        $("#download_all_parts i").text("file_download");
+      });
+    });
   }
 });
 function download_all_chapters(id, callback) {
+  chrome.notifications.create("storyDownload-" + id.toString(), {
+    type: "progress",
+    iconUrl: $("#information .cover img").attr("src"),
+    title: "Downloading",
+    progress: 14,
+    message: "Downloading story for offline reading..."
+  });
   var contains = false;
+  var storyDetails;
   getStorage(function() {
     sync_stories.forEach(function(index) {
       if(index.id == id) {
@@ -535,33 +583,37 @@ function download_all_chapters(id, callback) {
         return;
       }
     });
+    if(contains === false) {
+      $.ajax({
+        url: "https://www.wattpad.com/api/v3/stories/" + id,
+        type: "GET",
+        success: function(data) {
+          storyDetails = data;
+          getContents();
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+          console.log(jqXHR);
+          console.log(textStatus);
+          console.log(errorThrown);
+        }
+      });
+    }
   });
-  var storyDetails;
-  if(contains === false) {
-    $.ajax({
-      url: "https://www.wattpad.com/api/v3/stories/" + id,
-      type: "GET",
-      success: function(data) {
-        storyDetails = data;
-        getContents();
-      },
-      error: function(jqXHR, textStatus, errorThrown) {
-        console.log(jqXHR);
-        console.log(textStatus);
-        console.log(errorThrown);
-      }
-    });
-  }
   function getContents() {
     length = storyDetails.parts.length;
     count = 0;
     wait();
+    total = storyDetails.parts.length;
     storyDetails.parts.forEach(function(index, i) {
+      chrome.notifications.update("storyDownload-" + id.toString(), {
+        progress: Math.floor(((i + 1) / total) * 100)
+      });
       $.ajax({
         url: "https://www.wattpad.com/apiv2/storytext?id=" + index.id,
         type: "GET",
         success: function(data) {
-          storyDetails.parts[i].content = data;
+          var compressed = LZString.compressToUTF16(data);
+          storyDetails.parts[i].content = compressed;
           count++;
         },
         error: function(jqXHR, textStatus, errorThrown) {
@@ -583,7 +635,19 @@ function download_all_chapters(id, callback) {
       chrome.storage.local.set({
         stories: sync_stories
       });
-      callback("success", "Successfully Downloaded");
+      chrome.notifications.clear("storyDownload-" + id.toString(), function() {
+        chrome.notifications.create("success-" + id.toString(), {
+          iconUrl: "/images/Checkmark-256.png",
+          type: "basic",
+          title: "Download Completed",
+          message: "Download of story " + id.toString() + " has been completed!"
+        }, function() {
+          window.setTimeout(function() {
+            chrome.notifications.clear("success-" + id.toString());
+          }, 3000);
+        });
+        callback("success", "Download Completed!");
+      });
     }
   }
 }
