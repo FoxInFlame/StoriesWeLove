@@ -584,15 +584,39 @@ $("#download_all_parts").on("click", function() {
     deleteStory(detailedInformation_id);
   }
   function deleteStory(id) {
+    chrome.notifications.create("delete-" + id.toString(), {
+      type: "progress",
+      iconUrl: "images/ic_delete_black_48dp_2x.png",
+      title: "Removing...",
+      progress: 0,
+      message: "Removing story " + id.toString() + " from local storage..."
+    });
     getStorage(function() {
       sync_stories.forEach(function(index, i) {
         if(index.id == id.toString()) {
           sync_stories.splice(i, 1);
+          chrome.notifications.update("delete-" + id.toString(), {
+            progress: 50
+          });
         }
       });
       chrome.storage.local.set({
         stories: sync_stories
       }, function() {
+        chrome.notifications.update("delete-" + id.toString(), {
+          progress: 100
+        });
+        chrome.notifications.create("deleteSuccess-" + id.toString(), {
+          iconUrl: "/images/Checkmark-256.png",
+          type: "basic",
+          title: "Removed",
+          message: "Story " + id.toString() + " has been removed from local storage!"
+        }, function() {
+          chrome.notifications.clear("delete-" + id.toString());
+          window.setTimeout(function() {
+            chrome.notifications.clear("deleteSuccess-" + id.toString());
+          }, 3000);
+        });
         $("#information .action-button .floating-button").css("background", "#00b2b2");
         $("#download_all_parts i").text("file_download");
       });
@@ -603,9 +627,9 @@ function download_all_chapters(id, callback) {
   chrome.notifications.create("storyDownload-" + id.toString(), {
     type: "progress",
     iconUrl: $("#information .cover img").attr("src"),
-    title: "Downloading",
-    progress: 14,
-    message: "Downloading story for offline reading..."
+    title: "Downloading...",
+    progress: 0,
+    message: "Downloading story " + id.toString() + " for offline reading..."
   });
   var contains = false;
   var storyDetails;
@@ -668,19 +692,20 @@ function download_all_chapters(id, callback) {
       sync_stories.push(storyDetails);
       chrome.storage.local.set({
         stories: sync_stories
-      });
-      chrome.notifications.clear("storyDownload-" + id.toString(), function() {
-        chrome.notifications.create("success-" + id.toString(), {
-          iconUrl: "/images/Checkmark-256.png",
-          type: "basic",
-          title: "Download Completed",
-          message: "Download of story " + id.toString() + " has been completed!"
-        }, function() {
-          window.setTimeout(function() {
-            chrome.notifications.clear("success-" + id.toString());
-          }, 3000);
-        });
-        callback("success", "Download Completed!");
+      }, function() {
+        chrome.notifications.clear("storyDownload-" + id.toString(), function() {
+          chrome.notifications.create("success-" + id.toString(), {
+            iconUrl: "/images/Checkmark-256.png",
+            type: "basic",
+            title: "Download Completed",
+            message: "Download of story " + id.toString() + " has been completed!"
+          }, function() {
+            window.setTimeout(function() {
+              chrome.notifications.clear("success-" + id.toString());
+            }, 3000);
+          });
+          callback("success", "Download Completed!");
+        })
       });
     }
   }

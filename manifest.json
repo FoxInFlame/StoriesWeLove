@@ -1,11 +1,14 @@
 {
   "manifest_version": 2,
-  "name": "Stories We Love",
+  "name": "StoriesWeLove",
   "author": "FoxInFlame",
   "description": "A Material Design inspired WattPad client.",
-  "version": "0.5",
+  "version": "0.8",
   "icons": {
-    "128": "128.png"
+    "32": "32.png",
+    "64": "64.png",
+    "128": "128.png",
+    "256": "256.png"
   },
   "offline_enabled": true,
   "app": {
